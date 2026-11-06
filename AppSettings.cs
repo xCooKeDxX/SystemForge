@@ -9,6 +9,8 @@ public sealed class AppSettings
     public bool StartWithWindows { get; set; }
     /// <summary>Exe path the startup task was registered with, so a moved or reinstalled copy can fix it.</summary>
     public string? AutoStartPath { get; set; }
+    /// <summary>Version that last ran, so the installed/updated screen shows once per version.</summary>
+    public string? LastRunVersion { get; set; }
 
     /// <summary>Overlay position relative to the top-left of the monitor it's on. -1 = default corner.</summary>
     public int OverlayOffsetX { get; set; } = -1;

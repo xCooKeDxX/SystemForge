@@ -34,9 +34,14 @@
     <!-- A running SystemForge (it lives in the tray) would hold its files open: close it first. -->
     <CustomAction Id="SetTaskkill" Property="TASKKILL" Value="[SystemFolder]taskkill.exe" Execute="immediate" />
     <CustomAction Id="CloseRunning" Property="TASKKILL" ExeCommand="/F /IM SystemForge.exe" Execute="immediate" Return="ignore" />
+    <!-- Start the freshly installed copy, which shows its own "installed / updated" screen. -->
+    <CustomAction Id="SetLaunch" Property="LAUNCHEXE" Value="[INSTALLDIR]SystemForge.exe" Execute="immediate" />
+    <CustomAction Id="LaunchApp" Property="LAUNCHEXE" ExeCommand="" Execute="immediate" Return="asyncNoWait" />
     <InstallExecuteSequence>
       <Custom Action="SetTaskkill" Before="CloseRunning" />
       <Custom Action="CloseRunning" Before="InstallValidate" />
+      <Custom Action="SetLaunch" Before="LaunchApp" />
+      <Custom Action="LaunchApp" After="InstallFinalize">NOT REMOVE</Custom>
     </InstallExecuteSequence>
 
     <Feature Id="Main" Title="SystemForge" Level="1">

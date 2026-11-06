@@ -39,7 +39,7 @@ public sealed class MainForm : Form
     public MainForm(bool startHidden)
     {
         this.startHidden = startHidden;
-        Text = "SystemForge";
+        Text = $"SystemForge {Updater.CurrentVersion}";
         BackColor = Steel;
         MinimumSize = new Size(1040, 680);
         Size = new Size(1280, 820);
@@ -53,7 +53,7 @@ public sealed class MainForm : Form
         tray = new NotifyIcon
         {
             Icon = BuildAppIcon(16),
-            Text = "SystemForge",
+            Text = $"SystemForge {Updater.CurrentVersion}",
             Visible = true,
             ContextMenuStrip = BuildTrayMenu(),
         };
@@ -82,6 +82,7 @@ public sealed class MainForm : Form
         _ = Task.Run(RepairAutoStart);
         await InitWebViewAsync();
         StartProgramTracking();
+        ShowWelcomeIfNew();
         _ = Task.Run(() => Sensors.Read(Settings.TempUnit)); // warm up the sensors so the first reading is quick
     }
 
@@ -283,6 +284,39 @@ public sealed class MainForm : Form
             });
         }
         catch { /* offline or no release yet */ }
+    }
+
+    /// <summary>First run after an install or an update: a short "installed / updated to x.y.z" screen.</summary>
+    void ShowWelcomeIfNew()
+    {
+        string version = Updater.CurrentVersion;
+        if (Settings.LastRunVersion == version) return;
+        bool first = Settings.LastRunVersion is null;
+        Settings.LastRunVersion = version;
+        Settings.Save();
+        // Only for the installed copy (the installer writes this key); a loose build just runs.
+        bool installed = false;
+        try { using var k = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\SystemForge"); installed = k?.GetValue("installed") is not null; } catch { }
+        if (!installed) return;
+
+        if (!Visible) { Show(); Opacity = 1; }
+        using var dlg = new WelcomeDialog(version, first, File.Exists(WelcomeDialog.DesktopShortcutPath()), Settings.StartWithWindows);
+        dlg.ShowDialog(this);
+        if (!first) return;
+        if (dlg.DesktopShortcut) WelcomeDialog.CreateDesktopShortcut();
+        if (dlg.StartWithWindows != Settings.StartWithWindows)
+        {
+            try
+            {
+                AutoStart.Set(dlg.StartWithWindows);
+                Settings.StartWithWindows = AutoStart.IsEnabled();
+                Settings.AutoStartPath = Settings.StartWithWindows ? Environment.ProcessPath : null;
+                Settings.Save();
+                bridge.Emit("settings.changed", Settings);
+            }
+            catch { }
+        }
+        Activate();
     }
 
     // ---- Game Mode ----

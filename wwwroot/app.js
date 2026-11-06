@@ -1551,6 +1551,7 @@ async function checkApps() {
 on('apps.updated', (check) => { if (!state.apps2.installing) setAppsResult(check); });
 on('apps.progress', (p) => { state.apps2.progress = p; if (state.page === 'apps') renderApps2(); });
 on('nav', (m) => { if (m?.page) go(m.page); });
+on('settings.changed', (st) => { if (state.info) { state.info.settings = st; if (state.page === 'settings') renderSettings(); } });
 
 function summarizeApps() {
   const a = state.apps2;
