@@ -35,7 +35,8 @@ public sealed class Bridge
         catch (Exception ex)
         {
             var inner = ex is System.Reflection.TargetInvocationException { InnerException: not null } t ? t.InnerException! : ex;
-            Send(new { type = "reply", id, ok = false, error = inner.Message });
+            string message = string.IsNullOrWhiteSpace(inner.Message) ? $"{inner.GetType().Name} with no details." : inner.Message;
+            Send(new { type = "reply", id, ok = false, error = message });
         }
     }
 

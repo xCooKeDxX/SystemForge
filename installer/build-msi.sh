@@ -5,6 +5,8 @@
 set -euo pipefail
 PUB=${1:?publish folder}; VER=${2:?version}; OUT=${3:-.}
 HERE=$(cd "$(dirname "$0")" && pwd)
+CSV=$(grep -oP '<Version>\K[0-9.]+' "$HERE/../SystemForge.csproj")
+if [ "$CSV" != "$VER" ]; then echo "SystemForge.csproj says $CSV but you asked for $VER: fix the csproj first." >&2; exit 1; fi
 TMP=$(mktemp -d)
 # Every file under the publish folder becomes a component; the main exe is referenced by the shortcut.
 find "$PUB" -type f | sort | wixl-heat -p "$PUB/" --component-group AppFiles --var var.Pub --directory-ref INSTALLDIR > "$TMP/files.wxs"

@@ -30,7 +30,16 @@ public static partial class Updater
         if (Repo.Length == 0)
             return Last = new UpdateCheck(current, false, null, "Updates aren't set up yet: this build has no release page to check.", DateTime.Now);
 
-        string json = await Downloader.GetStringAsync($"https://api.github.com/repos/{Repo}/releases/latest", 30, ct);
+        string json;
+        try { json = await Downloader.GetStringAsync($"https://api.github.com/repos/{Repo}/releases/latest", 30, ct); }
+        catch (HttpRequestException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return Last = new UpdateCheck(current, true, null, "No release has been published yet. You have the latest version.", DateTime.Now);
+        }
+        catch (HttpRequestException ex)
+        {
+            return Last = new UpdateCheck(current, true, null, $"Couldn't reach GitHub ({(ex.StatusCode is { } sc ? ((int)sc).ToString() : ex.Message)}). Try again later.", DateTime.Now);
+        }
         using var doc = JsonDocument.Parse(json);
         var root = doc.RootElement;
         string tag = root.GetProperty("tag_name").GetString() ?? "";
