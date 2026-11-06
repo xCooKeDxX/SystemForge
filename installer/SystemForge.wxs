@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- SystemForge installer. Per-machine, into Program Files, with a Start menu shortcut.
+     Upgrades replace the previous version in place (same UpgradeCode); settings in AppData are untouched. -->
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Product Id="*" Name="SystemForge" Language="1033" Version="@VERSION@" Manufacturer="SystemForge"
+           UpgradeCode="7B2E6C3A-5D1F-4A8E-9C44-2F0B6E1D9A71">
+    <Package InstallerVersion="500" Compressed="yes" InstallScope="perMachine"
+             Description="SystemForge @VERSION@ Setup" Manufacturer="SystemForge" />
+    <MajorUpgrade DowngradeErrorMessage="A newer version of SystemForge is already installed." AllowSameVersionUpgrades="yes" />
+    <Media Id="1" Cabinet="app.cab" EmbedCab="yes" />
+    <Icon Id="AppIcon" SourceFile="$(var.Here)/SystemForge.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon" />
+    <Property Id="ARPNOREPAIR" Value="1" />
+    <Property Id="ARPURLINFOABOUT" Value="https://github.com/xCooKeDxX/SystemForge" />
+
+    <Directory Id="TARGETDIR" Name="SourceDir">
+      <Directory Id="ProgramFiles64Folder">
+        <Directory Id="INSTALLDIR" Name="SystemForge" />
+      </Directory>
+      <Directory Id="ProgramMenuFolder">
+        <Directory Id="MenuDir" Name="SystemForge" />
+      </Directory>
+    </Directory>
+
+    <DirectoryRef Id="MenuDir">
+      <Component Id="StartMenuShortcut" Guid="3F8C2D61-7A4B-4E0C-8B2D-1C9E5A7F3B20" Win64="yes">
+        <Shortcut Id="AppShortcut" Name="SystemForge" Description="PC care: drivers, security, cleanup, performance"
+                  Target="[INSTALLDIR]SystemForge.exe" WorkingDirectory="INSTALLDIR" Icon="AppIcon" />
+        <RemoveFolder Id="RemoveMenuDir" On="uninstall" />
+        <RegistryValue Root="HKCU" Key="Software\SystemForge" Name="installed" Type="integer" Value="1" KeyPath="yes" />
+      </Component>
+    </DirectoryRef>
+
+    <!-- A running SystemForge (it lives in the tray) would hold its files open: close it first. -->
+    <CustomAction Id="SetTaskkill" Property="TASKKILL" Value="[SystemFolder]taskkill.exe" Execute="immediate" />
+    <CustomAction Id="CloseRunning" Property="TASKKILL" ExeCommand="/F /IM SystemForge.exe" Execute="immediate" Return="ignore" />
+    <InstallExecuteSequence>
+      <Custom Action="SetTaskkill" Before="CloseRunning" />
+      <Custom Action="CloseRunning" Before="InstallValidate" />
+    </InstallExecuteSequence>
+
+    <Feature Id="Main" Title="SystemForge" Level="1">
+      <ComponentGroupRef Id="AppFiles" />
+      <ComponentRef Id="StartMenuShortcut" />
+    </Feature>
+  </Product>
+</Wix>

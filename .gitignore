@@ -1,0 +1,6 @@
+bin/
+obj/
+*.user
+*.msi
+*.sha256
+.vs/

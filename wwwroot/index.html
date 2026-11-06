@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SystemForge</title>
+  <link rel="stylesheet" href="styles.css?v=0.4.0">
+</head>
+<body>
+  <div class="shell">
+    <nav class="rail" aria-label="Sections">
+      <div class="brand">
+        <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+          <path d="M8.2 22.6A10 10 0 1 1 23.8 22.6" />
+          <path d="M16 16l5.4-4.6" />
+        </svg>
+        <span>SystemForge</span>
+      </div>
+
+      <button class="nav-item" data-page="overview" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 17a8 8 0 1 1 15 0"/><path d="M12 13l3.5-3.5"/></svg>
+        Overview
+      </button>
+      <button class="nav-item" data-page="drivers">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></svg>
+        Drivers
+        <span class="badge" id="navDriversBadge" hidden></span>
+      </button>
+      <button class="nav-item" data-page="apps">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="1.5"/><rect x="13" y="4" width="7" height="7" rx="1.5"/><rect x="4" y="13" width="7" height="7" rx="1.5"/><path d="M16.5 13v7M13 16.5h7"/></svg>
+        Apps
+        <span class="badge" id="navAppsBadge" hidden></span>
+      </button>
+      <button class="nav-item" data-page="security">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        Security
+        <span class="badge" id="navSecurityBadge" hidden></span>
+      </button>
+      <button class="nav-item" data-page="cleanup">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/><path d="M10.5 11v5M13.5 11v5"/></svg>
+        Cleanup
+      </button>
+      <button class="nav-item" data-page="startup">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v8"/><path d="M7 6.3a7.5 7.5 0 1 0 10 0"/></svg>
+        Startup
+      </button>
+      <button class="nav-item" data-page="performance">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h4l2.5-6 5 12 2.5-6h4"/></svg>
+        Performance
+      </button>
+
+      <div class="rail-spacer"></div>
+
+      <button class="nav-item" data-page="settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg>
+        Settings
+      </button>
+      <button class="game-chip" id="gameChip" hidden title="Game Mode is on. Click to open its settings.">
+        <span class="dot"></span><span class="stack"><span>Game Mode on</span><span class="meta" id="gameChipName"></span></span>
+      </button>
+      <button class="overlay-chip" id="overlayChip" title="Show or hide the overlay">
+        <span>Overlay</span>
+        <span class="keys" id="hotkeyKeys"><kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>O</kbd></span>
+      </button>
+    </nav>
+
+    <main id="main">
+      <div class="admin-warning" id="adminWarning" hidden>
+        SystemForge isn't running as administrator, so installing drivers and cleaning system folders won't work. Close it and open it again with "Run as administrator".
+      </div>
+
+      <!-- Overview -->
+      <section class="page" id="page-overview" aria-labelledby="h-overview">
+        <header class="page-head">
+          <div>
+            <h1 id="h-overview">Overview</h1>
+            <p class="lede" id="ovGreeting">Live readings from this PC.</p>
+          </div>
+          <button class="btn primary" id="btnCheckup">Run checkup</button>
+        </header>
+
+        <div class="cluster" id="cluster">
+          <figure class="gauge" id="gCpu"></figure>
+          <figure class="gauge" id="gGpu"></figure>
+          <figure class="gauge" id="gRam"></figure>
+          <figure class="gauge" id="gDisk"></figure>
+        </div>
+
+        <div class="ov-grid">
+          <section class="panel" aria-labelledby="h-checkup">
+            <h2 id="h-checkup">Checkup</h2>
+            <ul class="check-list" id="checkList"></ul>
+          </section>
+          <section class="panel" aria-labelledby="h-pc">
+            <h2 id="h-pc">This PC</h2>
+            <dl class="specs" id="specs"></dl>
+          </section>
+        </div>
+      </section>
+
+      <!-- Drivers -->
+      <section class="page" id="page-drivers" aria-labelledby="h-drivers" hidden>
+        <header class="page-head">
+          <div>
+            <h1 id="h-drivers">Drivers</h1>
+            <p class="lede">Checks Windows Update, the Microsoft Update Catalog, NVIDIA, AMD, Intel and winget, and only offers drivers Windows would pick for your exact hardware. A restore point and a backup are made before anything changes.</p>
+          </div>
+          <button class="btn primary" id="btnDrvCheck">Check for updates</button>
+        </header>
+
+        <div class="tabs" role="tablist" aria-label="Driver views">
+          <button role="tab" class="tab" data-tab="updates" aria-selected="true">Updates</button>
+          <button role="tab" class="tab" data-tab="devices" aria-selected="false">All devices</button>
+          <button role="tab" class="tab" data-tab="backups" aria-selected="false">Backups</button>
+        </div>
+
+        <div class="tabpanel" data-panel="updates" id="drvUpdates"></div>
+        <div class="tabpanel" data-panel="devices" id="drvDevices" hidden></div>
+        <div class="tabpanel" data-panel="backups" id="drvBackups" hidden></div>
+      </section>
+
+      <!-- Apps -->
+      <section class="page" id="page-apps" aria-labelledby="h-apps-page" hidden>
+        <header class="page-head">
+          <div>
+            <h1 id="h-apps-page">Apps</h1>
+            <p class="lede">Updates for the programs on this PC, from winget. Installers come from each publisher's own download and are checked against the catalog's hash before they run. New programs are picked up as soon as you install them.</p>
+          </div>
+          <button class="btn primary" id="btnAppsCheck">Check for updates</button>
+        </header>
+
+        <div class="tabs" role="tablist" aria-label="App views" id="appTabs">
+          <button role="tab" class="tab" data-apptab="updates" aria-selected="true">Updates</button>
+          <button role="tab" class="tab" data-apptab="programs" aria-selected="false">All programs</button>
+        </div>
+        <div id="apps-updates"></div>
+        <div id="apps-programs" hidden></div>
+      </section>
+
+      <!-- Security -->
+      <section class="page" id="page-security" aria-labelledby="h-security" hidden>
+        <header class="page-head">
+          <div>
+            <h1 id="h-security">Security</h1>
+            <p class="lede">Microsoft Defender does the virus scanning. SystemForge adds its own checks for adware, browser hijacks, hidden auto-start tricks, scam remote sessions and weakened settings. Fixes move things to quarantine or switch them off, and every change can be undone.</p>
+          </div>
+          <button class="btn primary" id="btnSecScan">Scan this PC</button>
+        </header>
+
+        <div id="secProtection"></div>
+
+        <div class="tabs" role="tablist" aria-label="Security views" id="secTabs">
+          <button role="tab" class="tab" data-sectab="findings" aria-selected="true">Findings</button>
+          <button role="tab" class="tab" data-sectab="autoruns" aria-selected="false">Startup &amp; tasks</button>
+          <button role="tab" class="tab" data-sectab="history" aria-selected="false">History &amp; undo</button>
+        </div>
+        <div id="sec-findings"></div>
+        <div id="sec-autoruns" hidden></div>
+        <div id="sec-history" hidden></div>
+
+        <p class="credit">Security checks inspired by <button class="link" data-credit>PC Health Scan by TCPeep</button>, used with his permission.</p>
+      </section>
+
+      <!-- Cleanup -->
+      <section class="page" id="page-cleanup" aria-labelledby="h-cleanup" hidden>
+        <header class="page-head">
+          <div>
+            <h1 id="h-cleanup">Cleanup</h1>
+            <p class="lede">Removes leftovers from a fixed list of places. Anything in use is skipped, and your documents, saves and logins are never touched.</p>
+          </div>
+          <button class="btn" id="btnJunkScan">Scan again</button>
+        </header>
+        <div id="junk"></div>
+      </section>
+
+      <!-- Startup -->
+      <section class="page" id="page-startup" aria-labelledby="h-startup" hidden>
+        <header class="page-head">
+          <div>
+            <h1 id="h-startup">Startup</h1>
+            <p class="lede" id="startupLede">Apps that open when you sign in. Turning one off doesn't uninstall it, and you can turn it back on any time.</p>
+          </div>
+          <input class="search" id="startupSearch" type="search" placeholder="Find an app" aria-label="Find a startup app">
+        </header>
+        <div id="startup"></div>
+      </section>
+
+      <!-- Performance -->
+      <section class="page" id="page-performance" aria-labelledby="h-perf" hidden>
+        <header class="page-head">
+          <div>
+            <h1 id="h-perf">Performance</h1>
+            <p class="lede">Watch what's using your PC and close anything that's stuck.</p>
+          </div>
+          <button class="btn primary" id="btnBoost">Free up memory</button>
+        </header>
+
+        <div class="charts">
+          <div class="chart-wrap" data-metric="cpu">
+            <div class="chart-head"><span>Processor</span><strong id="cpuNow">0%</strong></div>
+            <canvas id="cpuChart" height="140" aria-label="Processor use over the last two minutes" role="img"></canvas>
+          </div>
+          <div class="chart-wrap" data-metric="gpu">
+            <div class="chart-head"><span>Graphics</span><strong id="gpuNow">0%</strong></div>
+            <canvas id="gpuChart" height="140" aria-label="Graphics use over the last two minutes" role="img"></canvas>
+          </div>
+          <div class="chart-wrap" data-metric="ram">
+            <div class="chart-head"><span>Memory</span><strong id="ramNow">0%</strong></div>
+            <canvas id="ramChart" height="140" aria-label="Memory use over the last two minutes" role="img"></canvas>
+          </div>
+        </div>
+        <p class="note" id="boostNote">Free up memory trims background apps (never the one you're using, your game, audio or the display) and drops the part of Windows' cache it only filled on a guess. Windows manages memory well on its own, so this mostly helps when memory is nearly full, right before you start something heavy.</p>
+
+        <div class="perf-grid">
+          <section class="panel game-panel" id="gamePanel" aria-label="Game Mode"></section>
+          <section class="panel temps-panel" id="tempPanel" aria-label="Temperatures"></section>
+        </div>
+
+        <section class="panel flush" aria-labelledby="h-apps">
+          <h2 id="h-apps" class="panel-title">Open apps</h2>
+          <div id="apps"></div>
+        </section>
+      </section>
+
+      <!-- Settings -->
+      <section class="page" id="page-settings" aria-labelledby="h-settings" hidden>
+        <header class="page-head">
+          <div>
+            <h1 id="h-settings">Settings</h1>
+            <p class="lede" id="versionLine">SystemForge</p>
+          </div>
+        </header>
+        <div class="panel settings" id="settings"></div>
+
+        <div class="panel updates" id="updatesPanel"></div>
+
+        <div class="panel about">
+          <div class="panel-title">About &amp; credits</div>
+          <p>SystemForge is a PC-care app for Windows: drivers, app updates, security checks, cleanup, startup and performance.</p>
+          <p>The Security page's checks and its safety rules (quarantine instead of delete, an undo history, never touching Windows' own files) are inspired by <button class="link" data-credit>PC Health Scan by TCPeep</button>, an open-source PC health and adware scanner, and are used with his permission.</p>
+          <p>Temperatures and fan speeds are read with <strong>LibreHardwareMonitor</strong> (Mozilla Public License 2.0). CPU and motherboard sensors use the optional <strong>PawnIO</strong> driver by namazso.</p>
+          <p>Virus scanning is done by Microsoft Defender. Drivers come from Windows Update, the Microsoft Update Catalog, NVIDIA, AMD and Intel; apps and game components from winget.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <dialog id="confirm" class="dialog">
+    <form method="dialog">
+      <h2 id="confirmTitle"></h2>
+      <p id="confirmBody"></p>
+      <div class="dialog-actions">
+        <button value="cancel" class="btn" id="confirmCancel">Cancel</button>
+        <button value="ok" class="btn primary" id="confirmOk">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toasts" id="toasts" aria-live="polite"></div>
+  <script src="app.js?v=0.4.0"></script>
+</body>
+</html>
