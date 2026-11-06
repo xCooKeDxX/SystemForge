@@ -35,8 +35,9 @@
     <CustomAction Id="SetTaskkill" Property="TASKKILL" Value="[SystemFolder]taskkill.exe" Execute="immediate" />
     <CustomAction Id="CloseRunning" Property="TASKKILL" ExeCommand="/F /IM SystemForge.exe" Execute="immediate" Return="ignore" />
     <!-- Start the freshly installed copy, which shows its own "installed / updated" screen. -->
-    <CustomAction Id="SetLaunch" Property="LAUNCHEXE" Value="[INSTALLDIR]SystemForge.exe" Execute="immediate" />
-    <CustomAction Id="LaunchApp" Property="LAUNCHEXE" ExeCommand="" Execute="immediate" Return="asyncNoWait" />
+    <!-- Through "start", so Windows shows the normal admin prompt (SystemForge needs it); a direct launch would be refused. -->
+    <CustomAction Id="SetLaunch" Property="CMDEXE" Value="[SystemFolder]cmd.exe" Execute="immediate" />
+    <CustomAction Id="LaunchApp" Property="CMDEXE" ExeCommand="/d /c start &quot;&quot; &quot;[INSTALLDIR]SystemForge.exe&quot;" Execute="immediate" Return="asyncNoWait" />
     <InstallExecuteSequence>
       <Custom Action="SetTaskkill" Before="CloseRunning" />
       <Custom Action="CloseRunning" Before="InstallValidate" />
